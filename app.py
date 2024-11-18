@@ -9,7 +9,7 @@ import pathlib
 st.title('Rasmlarni klassifikatsiya qiluvchi model')
 
 # Fayl yo‘lini aniqlash
-model_path = pathlib.Path('transport_model.pkl')
+model_path = pathlib.Path('modelbonu.pkl')
 
 # Rasm yuklash
 files = st.file_uploader("Rasm yuklash", type=["avif", "png", "jpeg", "gif", "svg", "jfif"])
