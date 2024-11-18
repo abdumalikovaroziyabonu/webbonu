@@ -1,20 +1,17 @@
+#uzgarish 2
 import streamlit as st
 from fastai.vision.all import *
 import plotly.express as px
-import pathlib
 from PIL import Image
 import requests
 from io import BytesIO
-
-# PosixPath muvofiqligi
-temp = pathlib.PosixPath
-pathlib.PosixPath = pathlib.WindowsPath
+import pathlib
 
 # Streamlit sarlavhasi
 st.title('Transportni klassifikatsiya qiluvchi model')
 
 # Rasm yuklash
-files = st.file_uploader("Rasm yuklash", type=["avif", "png", "jpeg", "gif", "svg"])
+files = st.file_uploader("Rasm yuklash", type=["avif", "png", "jpeg", "gif", "svg", "jfif"])
 if files:
     # Rasmni ko‘rsatish
     st.image(files)
@@ -22,7 +19,8 @@ if files:
 
     try:
         # Modelni yuklash
-        model = load_learner('transport_model.pkl')
+        model_path = pathlib.Path('transport_model.pkl')  # Fayl yo'lini aniqlash
+        model = load_learner(model_path)  # Modelni yuklash
     except Exception as e:
         st.error(f"Modelni yuklashda xatolik: {e}")
         model = None
@@ -35,13 +33,13 @@ if files:
             st.info(f"Ehtimollik: {probs[pred_id] * 100:.1f}%")
 
             # Diagrammani chizish
-            fig = px.bar(x=probs * 100, y=model.dls.vocab, labels={'x': "Ehtimollik (%)", 'y': "Klasslar"}, orientation='h')
+            fig = px.bar(x=probs * 100, y=model.dls.vocab, 
+                         labels={'x': "Ehtimollik (%)", 'y': "Klasslar"}, 
+                         orientation='h')
             st.plotly_chart(fig)
         except Exception as e:
             st.error(f"Bashoratda xatolik: {e}")
 
-# Asl qiymatni tiklash
-pathlib.PosixPath = temp
 
 
 # import streamlit as st
