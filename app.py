@@ -8,7 +8,7 @@ from io import BytesIO
 import pathlib
 
 # Streamlit sarlavhasi
-st.title('Transportni klassifikatsiya qiluvchi model')
+st.title('Rasmlarni klassifikatsiya qiluvchi model')
 
 # Rasm yuklash
 files = st.file_uploader("Rasm yuklash", type=["avif", "png", "jpeg", "gif", "svg", "jfif"])
