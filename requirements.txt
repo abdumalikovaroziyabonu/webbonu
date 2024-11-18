@@ -1,2 +1,3 @@
-fastai
 plotly
+fastai==2.7.12 
+torch==1.13.1
