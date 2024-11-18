@@ -1,45 +1,55 @@
-#uzgarish 2
 import streamlit as st
 from fastai.vision.all import *
 import plotly.express as px
 from PIL import Image
-import requests
-from io import BytesIO
+import numpy as np
 import pathlib
 
 # Streamlit sarlavhasi
 st.title('Rasmlarni klassifikatsiya qiluvchi model')
 
+# Fayl yo‘lini aniqlash
+model_path = pathlib.Path('transport_model.pkl')
+
 # Rasm yuklash
 files = st.file_uploader("Rasm yuklash", type=["avif", "png", "jpeg", "gif", "svg", "jfif"])
 if files:
-    # Rasmni ko‘rsatish
+    # Rasmni yuklash va ko‘rsatish
     st.image(files)
-    img = PILImage.create(files.getvalue())
 
+    # Tasvirni RGB formatga o‘tkazish
     try:
-        # Modelni yuklash
-        model_path = pathlib.Path('transport_model.pkl')  # Fayl yo'lini aniqlash
-        model = load_learner(model_path)  # Modelni yuklash
+        image = Image.open(files).convert("RGB")  # Tasvirni ochish va RGB formatga aylantirish
+        img = PILImage.create(np.array(image))  # Tasvirni FastAI formatiga aylantirish
     except Exception as e:
-        st.error(f"Modelni yuklashda xatolik: {e}")
-        model = None
+        st.error(f"Tasvirni ishlov berishda xatolik: {e}")
+        img = None
 
-    if model is not None:
-        # Bashoratni topish
+    if img is not None:
         try:
-            pred, pred_id, probs = model.predict(img)
-            st.success(f"Bashorat: {pred}")
-            st.info(f"Ehtimollik: {probs[pred_id] * 100:.1f}%")
-
-            # Diagrammani chizish
-            fig = px.bar(x=probs * 100, y=model.dls.vocab, 
-                         labels={'x': "Ehtimollik (%)", 'y': "Klasslar"}, 
-                         orientation='h')
-            st.plotly_chart(fig)
+            # Modelni yuklash
+            model = load_learner(model_path)
         except Exception as e:
-            st.error(f"Bashoratda xatolik: {e}")
+            st.error(f"Modelni yuklashda xatolik: {e}")
+            model = None
 
+        if model is not None:
+            try:
+                # Bashoratni topish
+                pred, pred_id, probs = model.predict(img)
+                st.success(f"Bashorat: {pred}")
+                st.info(f"Ehtimollik: {probs[pred_id] * 100:.1f}%")
+
+                # Diagrammani chizish
+                fig = px.bar(
+                    x=probs * 100, 
+                    y=model.dls.vocab, 
+                    labels={'x': "Ehtimollik (%)", 'y': "Klasslar"}, 
+                    orientation='h'
+                )
+                st.plotly_chart(fig)
+            except Exception as e:
+                st.error(f"Bashoratda xatolik: {e}")
 
 
 # import streamlit as st
