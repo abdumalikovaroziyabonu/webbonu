@@ -7,7 +7,7 @@ import pathlib
 
 # Streamlit sarlavhasi
 st.title('Rasmlarni klassifikatsiya qiluvchi model')
-
+st.write("Klassar : Car Airplane Boat Bird Flower Tree Vegetable Fruit Person Cosmetics")
 # Fayl yo‘lini aniqlash
 model_path = pathlib.Path('modelbonu.pkl')
 
